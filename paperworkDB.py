@@ -47,7 +47,7 @@ def apply_filters(a = None):
             tree.insert("", "end", values=row)
 
 root = tk.Tk()
-root.title("Tabelle mit Treeview")
+root.title("paperworkDB")
 
 menubar = tk.Menu(root)
 file_menu = tk.Menu(menubar, tearoff=0)

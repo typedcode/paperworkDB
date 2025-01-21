@@ -61,7 +61,6 @@ filter_frame.grid(row=0, column=0, columnspan=2, pady=5, sticky="ew")
 person_label = tk.Label(filter_frame, text="Person:")
 person_label.grid(row=0, column=0, padx=5, pady=5)
 persons = get_persons()
-print(persons)
 person_combobox = ttk.Combobox(filter_frame, values=persons, state="readonly")
 person_combobox.bind('<<ComboboxSelected>>', apply_filters)
 person_combobox.grid(row=0, column=1, padx=5, pady=5)
@@ -90,7 +89,6 @@ tag_button = ttk.Button(tag_frame, text="Tags auswählen")
 tag_button.grid(row=0, column=1, padx=5, pady=5)
 
 tags = get_tags()
-print(tags)
 tag_vars = {tag: tk.BooleanVar() for tag in tags}
 selected_tags = []
 

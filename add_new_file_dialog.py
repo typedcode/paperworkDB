@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 from tkcalendar import DateEntry
 from add_new_person import open_add_person
+from add_new_sender import open_add_sender
 from add_new_tag import open_add_tag
-from db_handler import add_file, get_persons, get_tags, add_entry
+from db_handler import add_file, get_persons, get_tags, add_entry, get_senders
 
 def open_add_dialog(on_ok_callback):
     def on_add_person():
@@ -11,6 +12,12 @@ def open_add_dialog(on_ok_callback):
 
     def refill_persons():
         person_combobox['values'] = get_persons()
+
+    def on_add_sender():
+        open_add_sender(refill_senders)
+
+    def refill_senders():
+        sender_combobox['values'] = get_senders()
 
     def on_add_tag():
         open_add_tag(tag_added_callback)
@@ -39,7 +46,7 @@ def open_add_dialog(on_ok_callback):
             if var.get():
                 selected_tags.append(tag)
         fileId = add_file(file_entry.get())
-        add_entry(date_picker.get_date(), person_combobox.get(), name_entry.get(), note_text.get("1.0", tk.END).strip(), selected_tags, fileId )
+        add_entry(date_picker.get_date(), person_combobox.get(), sender_combobox.get(), name_entry.get(), note_text.get("1.0", tk.END).strip(), selected_tags, fileId )
         on_ok_callback()
         dialog.destroy()
 
@@ -67,22 +74,28 @@ def open_add_dialog(on_ok_callback):
     person_combobox = ttk.Combobox(dialog, values=persons, state="readonly")
     person_combobox.grid(row=3, column=1, columnspan=1, padx=10, pady=5)
     
-    tk.Button(dialog, text="Neue Person hinzufügen", command=on_add_person).grid(row=3, column=2, padx=10, pady=10)
+    tk.Button(dialog, text="Person hinzufügen", command=on_add_person).grid(row=3, column=2, padx=10, pady=10)
 
+    tk.Label(dialog, text="Absender:").grid(row=4, column=0, padx=10, pady=5)
+    senders = get_senders()
+    sender_combobox = ttk.Combobox(dialog, values=senders, state="readonly")
+    sender_combobox.grid(row=4, column=1, columnspan=1, padx=10, pady=5)
+    
+    tk.Button(dialog, text="Absender hinzufügen", command=on_add_sender).grid(row=4, column=2, padx=10, pady=10)
 
-    tk.Label(dialog, text="Notiz:").grid(row=4, column=0, padx=10, pady=5)
+    tk.Label(dialog, text="Notiz:").grid(row=5, column=0, padx=10, pady=5)
     note_text = tk.Text(dialog, width=40, height=5)
-    note_text.grid(row=4, column=1, columnspan=2, padx=10, pady=5)
+    note_text.grid(row=5, column=1, columnspan=2, padx=10, pady=5)
 
-    tk.Label(dialog, text="Tags:").grid(row=5, column=0, padx=10, pady=5, sticky="nw")
+    tk.Label(dialog, text="Tags:").grid(row=6, column=0, padx=10, pady=5, sticky="nw")
     tags = get_tags()
     tag_vars = {tag: tk.BooleanVar() for tag in tags}
-    row = 5
+    row = 6 
     for i, tag in enumerate(tags):
         tk.Checkbutton(dialog, text=tag, variable=tag_vars[tag]).grid(row=row, column=1, sticky="w", padx=10, pady=2)
         row += 1
 
-    tk.Button(dialog, text="Neuen Tag hinzufügen", command=on_add_tag).grid(row=5, column=2, padx=10, pady=10)
+    tk.Button(dialog, text="Tag hinzufügen", command=on_add_tag).grid(row=5, column=2, padx=10, pady=10)
     
     okCancelRow = row;
     if( okCancelRow == 5 ):

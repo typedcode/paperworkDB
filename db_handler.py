@@ -26,14 +26,23 @@ def init_db():
         ''')
         
         cursor.execute('''
+            CREATE TABLE IF NOT EXISTS senders (
+                id TEXT PRIMARY KEY,
+                sender TEXT UNIQUE NOT NULL
+            )
+        ''')
+
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS entries (
                 id TEXT PRIMARY KEY,
                 date TEXT NOT NULL,
                 person_id TEXT NOT NULL,
+                sender_id TEXT NULL,
                 name TEXT NOT NULL,
                 note TEXT,
                 file VARCHAR(36),
                 FOREIGN KEY(person_id) REFERENCES persons(id),
+                FOREIGN KEY(sender_id) REFERENCES senders(id),
                 FOREIGN KEY(file) REFERENCES files(id)
             )
         ''')
@@ -55,19 +64,26 @@ def init_db():
         ''')
         conn.commit()
 
-def add_entry(date, person_name, entry_name, note, tags, fileId):
+def add_entry(date, person_name, sender, entry_name, note, tags, fileId):
     with get_connection() as conn:
         cursor = conn.cursor()
         
         cursor.execute("SELECT id FROM persons WHERE name = ?", (person_name,))
         person = cursor.fetchone()
         person_id = person[0]
+
+        sender_id = None
+
+        if( sender != "" ):
+            cursor.execute("SELECT id from senders WHERE sender = ?", (sender,))
+            sender_fetch_result = cursor.fetchone()
+            sender_id = sender_fetch_result[0]
         
         entry_id = generate_uuid()
         cursor.execute('''
-            INSERT INTO entries (id, date, person_id, name, note, file)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (entry_id, date, person_id, entry_name, note, fileId))
+            INSERT INTO entries (id, date, person_id, sender_id, name, note, file)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (entry_id, date, person_id, sender_id, entry_name, note, fileId))
         
         for tag in tags:
             cursor.execute("SELECT id FROM tags WHERE name = ?", (tag,))
@@ -119,11 +135,29 @@ def get_persons():
         ''')
         return [val[0] for val in cursor.fetchall()]
 
+def get_senders():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT sender
+            FROM senders
+            ORDER BY lower(sender)
+        ''')
+        return [val[0] for val in cursor.fetchall()]
+
 def get_first_date():
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT MIN(date) as FirstDate from entries')
         return cursor.fetchone()
+
+def add_sender(sender): 
+    uuid = generate_uuid()
+
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO senders (id, sender) VALUES (?, ?)", (uuid, sender))
+
 
 def add_file(file_path): 
     uuid = generate_uuid()

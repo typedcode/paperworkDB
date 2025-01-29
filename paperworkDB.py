@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
 from add_new_file_dialog import open_add_dialog
-from db_handler import get_tags, init_db, get_entries, get_persons, get_first_date
+from db_handler import get_tags, init_db, get_entries, get_persons, get_first_date, get_senders
 from datetime import datetime
 
 from open_file import readBlobData
@@ -28,6 +28,7 @@ def double_click(event):
 
 def apply_filters(a = None):
     person = person_combobox.get()
+    sender = sender_combobox.get()
     start_date = start_date_picker.get_date()
     end_date = end_date_picker.get_date()
     for item in tree.get_children():
@@ -36,10 +37,12 @@ def apply_filters(a = None):
     for row in get_entries():
         row_date = row[1]
         row_person = row[2]
-        row_tags = [] if row[4] == None else row[4].split(", ")
+        row_sender = row[3]
+        row_tags = [] if row[5] == None else row[5].split(", ")
         
         if (
             (not person or person == row_person) and
+            (not sender or sender == row_sender) and
             (not start_date or row_date >= start_date.strftime('%Y-%m-%d')) and
             (not end_date or row_date <= end_date.strftime('%Y-%m-%d')) and
             all(tag in row_tags for tag in selected_tags)
@@ -65,18 +68,25 @@ person_combobox = ttk.Combobox(filter_frame, values=persons, state="readonly")
 person_combobox.bind('<<ComboboxSelected>>', apply_filters)
 person_combobox.grid(row=0, column=1, padx=5, pady=5)
 
+sender_label = tk.Label(filter_frame, text="Absender:")
+sender_label.grid(row=0, column=2, padx=5, pady=5)
+senders = get_senders()
+sender_combobox = ttk.Combobox(filter_frame, values=senders, state="readonly")
+sender_combobox.bind('<<ComboboxSelected>>', apply_filters)
+sender_combobox.grid(row=0, column=3, padx=5, pady=5)
+
 start_date_label = tk.Label(filter_frame, text="Startdatum:")
-start_date_label.grid(row=0, column=2, padx=5, pady=5)
+start_date_label.grid(row=0, column=4, padx=5, pady=5)
 start_date_picker = DateEntry(filter_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
 start_date_picker.bind('<<DateEntrySelected>>', apply_filters);
 if get_first_date()[0] != None:
     start_date_picker.set_date(datetime.strptime( get_first_date()[0], '%Y-%m-%d'));
-start_date_picker.grid(row=0, column=3, padx=5, pady=5)
+start_date_picker.grid(row=0, column=5, padx=5, pady=5)
 
 end_date_label = tk.Label(filter_frame, text="Enddatum:")
-end_date_label.grid(row=0, column=4, padx=5, pady=5)
+end_date_label.grid(row=0, column=6, padx=5, pady=5)
 end_date_picker = DateEntry(filter_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
-end_date_picker.grid(row=0, column=5, padx=5, pady=5)
+end_date_picker.grid(row=0, column=7, padx=5, pady=5)
 end_date_picker.bind('<<DateEntrySelected>>', apply_filters);
 
 tag_frame = tk.Frame(root)
@@ -100,9 +110,6 @@ for tag, var in tag_vars.items():
     tag_menu.add_checkbutton(label=tag, variable=var, onvalue=True, offvalue=False, command=update_selected_tags)
 
 tag_button.bind("<Button-1>", show_tag_menu)
-
-filter_button = tk.Button(filter_frame, text="Filter anwenden", command=apply_filters)
-filter_button.grid(row=0, column=6, padx=5, pady=5)
 
 columns = ("Id", "Datum", "Person", "Sender", "Name", "Tags", "Notiz", "FileId")
 tree = ttk.Treeview(root, columns=columns, show="headings")

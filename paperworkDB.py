@@ -104,13 +104,13 @@ tag_button.bind("<Button-1>", show_tag_menu)
 filter_button = tk.Button(filter_frame, text="Filter anwenden", command=apply_filters)
 filter_button.grid(row=0, column=6, padx=5, pady=5)
 
-columns = ("Id", "Datum", "Person", "Name", "Tags", "Notiz", "FileId")
+columns = ("Id", "Datum", "Person", "Sender", "Name", "Tags", "Notiz", "FileId")
 tree = ttk.Treeview(root, columns=columns, show="headings")
 
 for col in columns:
     tree.heading(col, text=col)
     tree.column(col, anchor="w")
-tree['displaycolumns'] = ("Datum", "Person", "Name", "Tags", "Notiz")
+tree['displaycolumns'] = ("Datum", "Person", "Sender", "Name", "Tags", "Notiz")
 
 scrollbar = ttk.Scrollbar(root, orient="vertical", command=tree.yview)
 tree.configure(yscroll=scrollbar.set)

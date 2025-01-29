@@ -98,13 +98,14 @@ def get_entries():
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('''
-            SELECT e.id, e.date, p.name, e.name, 
+            SELECT e.id, e.date, p.name, COALESCE(s.sender, '') as sender, e.name, 
                    (SELECT GROUP_CONCAT(t.name) FROM tags t 
                     JOIN tags_to_entry te ON t.id = te.tag_id 
                     WHERE te.entry_id = e.id) AS tags,
                    e.note, e.file
             FROM entries e
             JOIN persons p ON e.person_id = p.id
+            LEFT JOIN senders s ON e.sender_id = s.id
             ORDER BY e.date DESC
         ''')
         return cursor.fetchall()

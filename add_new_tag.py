@@ -4,7 +4,7 @@ from db_handler import add_tag
 def open_add_tag(add_tag_callback):
     def on_ok():
         add_tag(tag_entry.get() )
-        add_tag_callback(tag_entry.get())
+        add_tag_callback()
         dialog.destroy()
 
     dialog = tk.Toplevel()

@@ -22,13 +22,12 @@ def open_add_dialog(on_ok_callback):
     def on_add_tag():
         open_add_tag(tag_added_callback)
 
-    def tag_added_callback(tagName):
-        nonlocal row, tag_vars
-        tag_vars[tagName] = tk.BooleanVar();
-        tk.Checkbutton(dialog, text=tagName, variable=tag_vars[tagName]).grid(row=row, column=1, sticky="w", padx=10, pady=2)
-        row += 1
-        okButton.grid(row=row, column=1, pady=10)
-        cancelButton.grid(row=row, column=2, pady=10)
+    def tag_added_callback():
+        nonlocal listbox
+        listbox.delete(0, tk.END);
+        tags = get_tags()
+        for tag in tags:
+            listbox.insert(tk.END, tag)
 
 
     def select_file():
@@ -41,10 +40,7 @@ def open_add_dialog(on_ok_callback):
             file_entry.insert(0, file_path)
 
     def on_ok():
-        selected_tags = []
-        for tag, var in tag_vars.items():
-            if var.get():
-                selected_tags.append(tag)
+        selected_tags = [listbox.get(i) for i in listbox.curselection()]
         fileId = add_file(file_entry.get())
         add_entry(date_picker.get_date(), person_combobox.get(), sender_combobox.get(), name_entry.get(), note_text.get("1.0", tk.END).strip(), selected_tags, fileId )
         on_ok_callback()
@@ -89,22 +85,17 @@ def open_add_dialog(on_ok_callback):
 
     tk.Label(dialog, text="Tags:").grid(row=6, column=0, padx=10, pady=5, sticky="nw")
     tags = get_tags()
-    tag_vars = {tag: tk.BooleanVar() for tag in tags}
-    row = 6 
-    for i, tag in enumerate(tags):
-        tk.Checkbutton(dialog, text=tag, variable=tag_vars[tag]).grid(row=row, column=1, sticky="w", padx=10, pady=2)
-        row += 1
+    listbox = tk.Listbox(dialog, selectmode=tk.MULTIPLE, height=8)
+    listbox.grid(row=6, column=1, padx=10, pady=5)
+    for tag in tags:
+        listbox.insert(tk.END, tag)
 
-    tk.Button(dialog, text="Tag hinzufügen", command=on_add_tag).grid(row=5, column=2, padx=10, pady=10)
-    
-    okCancelRow = row;
-    if( okCancelRow == 5 ):
-        okCancelRow +=1
+    tk.Button(dialog, text="Tag hinzufügen", command=on_add_tag).grid(row=6, column=2, padx=10, pady=10, sticky="n")
 
     okButton = tk.Button(dialog, text="Ok", command=on_ok)
-    okButton.grid(row=okCancelRow, column=1, pady=10)
+    okButton.grid(row=7, column=1, pady=10)
 
     cancelButton = tk.Button(dialog, text="Schließen", command=dialog.destroy)
-    cancelButton.grid(row=okCancelRow, column=2, pady=10)
+    cancelButton.grid(row=7, column=2, pady=10)
 
     dialog.wait_window();

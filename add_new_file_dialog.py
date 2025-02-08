@@ -33,7 +33,8 @@ def open_add_dialog(on_ok_callback):
     def select_file():
         file_path = filedialog.askopenfilename(
             title="Datei auswählen", 
-            filetypes=[("Alle Dateien", "*.*"), ("Textdateien", "*.txt")]
+            filetypes=[("Alle Dateien", "*.*"), ("Textdateien", "*.txt")],
+            parent=dialog
         )
         if file_path:
             file_entry.delete(0, tk.END)

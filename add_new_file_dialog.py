@@ -52,50 +52,52 @@ def open_add_dialog(on_ok_callback):
     dialog.transient();
     dialog.grab_set();
 
-    tk.Label(dialog, text="Dateipfad:").grid(row=0, column=0, padx=10, pady=5)
+    tk.Label(dialog, text="Dateipfad:").grid(row=0, column=0, padx=10, pady=5, sticky='w')
     file_entry = tk.Entry(dialog, width=40)
-    file_entry.grid(row=0, column=1, padx=10, pady=5)
-    tk.Button(dialog, text="Datei auswählen", command=select_file).grid(row=0, column=2, padx=10, pady=5)
+    file_entry.grid(row=0, column=1, padx=10, pady=5, sticky='ew')
+    tk.Button(dialog, text="Datei auswählen", command=select_file).grid(row=0, column=2, padx=10, pady=5, sticky='ew')
 
-    tk.Label(dialog, text="Name:").grid(row=1, column=0, padx=10, pady=5)
+    tk.Label(dialog, text="Name:").grid(row=1, column=0, padx=10, pady=5, sticky='w')
     name_entry = tk.Entry(dialog, width=40)
-    name_entry.grid(row=1, column=1, columnspan=2, padx=10, pady=5)
+    name_entry.grid(row=1, column=1, columnspan=2, padx=10, pady=5, sticky='ew')
 
-    tk.Label(dialog, text="Datum:").grid(row=2, column=0, padx=10, pady=5)
+    tk.Label(dialog, text="Datum:").grid(row=2, column=0, padx=10, pady=5, sticky='w')
     date_picker = DateEntry(dialog, width=12, background='darkblue', foreground='white', borderwidth=2)
     date_picker.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-    tk.Label(dialog, text="Person:").grid(row=3, column=0, padx=10, pady=5)
+    tk.Label(dialog, text="Person:").grid(row=3, column=0, padx=10, pady=5, sticky='w')
     persons = get_persons()
     person_combobox = ttk.Combobox(dialog, values=persons, state="readonly")
-    person_combobox.grid(row=3, column=1, columnspan=1, padx=10, pady=5)
+    person_combobox.grid(row=3, column=1, columnspan=1, padx=10, pady=5, sticky='ew')
     
-    tk.Button(dialog, text="Person hinzufügen", command=on_add_person).grid(row=3, column=2, padx=10, pady=10)
+    tk.Button(dialog, text="Person hinzufügen", command=on_add_person).grid(row=3, column=2, padx=10, pady=10, sticky='ew')
 
-    tk.Label(dialog, text="Absender:").grid(row=4, column=0, padx=10, pady=5)
+    tk.Label(dialog, text="Absender:").grid(row=4, column=0, padx=10, pady=5, sticky='w')
     senders = get_senders()
     sender_combobox = ttk.Combobox(dialog, values=senders, state="readonly")
-    sender_combobox.grid(row=4, column=1, columnspan=1, padx=10, pady=5)
+    sender_combobox.grid(row=4, column=1, columnspan=1, padx=10, pady=5, sticky='ew')
     
     tk.Button(dialog, text="Absender hinzufügen", command=on_add_sender).grid(row=4, column=2, padx=10, pady=10)
 
-    tk.Label(dialog, text="Notiz:").grid(row=5, column=0, padx=10, pady=5)
+    tk.Label(dialog, text="Notiz:").grid(row=5, column=0, padx=10, pady=5, sticky='nw')
     note_text = tk.Text(dialog, width=40, height=5)
-    note_text.grid(row=5, column=1, columnspan=2, padx=10, pady=5)
+    note_text.grid(row=5, column=1, columnspan=2, padx=10, pady=5, sticky='ew')
 
     tk.Label(dialog, text="Tags:").grid(row=6, column=0, padx=10, pady=5, sticky="nw")
     tags = get_tags()
     listbox = tk.Listbox(dialog, selectmode=tk.MULTIPLE, height=8)
-    listbox.grid(row=6, column=1, padx=10, pady=5)
+    listbox.grid(row=6, column=1, padx=10, pady=5, sticky='ew')
     for tag in tags:
         listbox.insert(tk.END, tag)
 
-    tk.Button(dialog, text="Tag hinzufügen", command=on_add_tag).grid(row=6, column=2, padx=10, pady=10, sticky="n")
+    tk.Button(dialog, text="Tag hinzufügen", command=on_add_tag).grid(row=6, column=2, padx=10, pady=10, sticky="new")
 
-    okButton = tk.Button(dialog, text="Ok", command=on_ok)
-    okButton.grid(row=7, column=1, pady=10)
+    buttonFrame = tk.Frame(dialog)
+    buttonFrame.grid(row=7, column=1, columnspan=3, padx=10, pady=5)
+    okButton = tk.Button(buttonFrame, text="Datei hinzufügen", command=on_ok)
+    okButton.grid(row=1, column=1, pady=10, padx=10)
 
-    cancelButton = tk.Button(dialog, text="Schließen", command=dialog.destroy)
-    cancelButton.grid(row=7, column=2, pady=10)
+    cancelButton = tk.Button(buttonFrame, text="Abbrechen", command=dialog.destroy)
+    cancelButton.grid(row=1, column=2, pady=10, padx=10)
 
     dialog.wait_window();

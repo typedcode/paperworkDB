@@ -1,10 +1,13 @@
+from os.path import exists, isfile
 import tkinter as tk
+import tkinter.messagebox as messagebox
 from tkinter import ttk, filedialog
 from tkcalendar import DateEntry
 from add_new_person import open_add_person
 from add_new_sender import open_add_sender
 from add_new_tag import open_add_tag
 from db_handler import add_file, get_persons, get_tags, add_entry, get_senders
+import os
 
 def open_add_dialog(on_ok_callback):
     def on_add_person():
@@ -29,6 +32,8 @@ def open_add_dialog(on_ok_callback):
         for tag in tags:
             listbox.insert(tk.END, tag)
 
+    def showErrorMessage(message):
+        messagebox.showerror(title="Fehler", message=message, parent=dialog)
 
     def select_file():
         file_path = filedialog.askopenfilename(
@@ -41,9 +46,27 @@ def open_add_dialog(on_ok_callback):
             file_entry.insert(0, file_path)
 
     def on_ok():
+        person_input = person_combobox.get()
+        file_path = file_entry.get()
+        name = name_entry.get().strip()
+
+        if not os.path.exists(file_path):
+            showErrorMessage("Die angegebene Datei existiert nicht")
+            return
+        if not os.path.isfile(file_path):
+            showErrorMessage("Der angegebene Pfad zeigt nicht auf eine Datei.")
+            return
+        if name == "":
+            showErrorMessage("Bitte geben Sie einen namen für den Eintrag an")
+            return
+        if( person_input == "" ):
+            messagebox.showerror(title="Fehler", message="Bitte wähle eine Person aus.", parent=dialog)
+            return
+
+        print( "person: " + person_input)
         selected_tags = [listbox.get(i) for i in listbox.curselection()]
-        fileId = add_file(file_entry.get())
-        add_entry(date_picker.get_date(), person_combobox.get(), sender_combobox.get(), name_entry.get(), note_text.get("1.0", tk.END).strip(), selected_tags, fileId )
+        fileId = add_file(file_path)
+        add_entry(date_picker.get_date(), person_input, sender_combobox.get(), name, note_text.get("1.0", tk.END).strip(), selected_tags, fileId )
         on_ok_callback()
         dialog.destroy()
 

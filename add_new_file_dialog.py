@@ -7,7 +7,6 @@ from add_new_person import open_add_person
 from add_new_sender import open_add_sender
 from add_new_tag import open_add_tag
 from db_handler import add_file, get_persons, get_tags, add_entry, get_senders
-import os
 
 def open_add_dialog(on_ok_callback):
     def on_add_person():
@@ -50,10 +49,10 @@ def open_add_dialog(on_ok_callback):
         file_path = file_entry.get()
         name = name_entry.get().strip()
 
-        if not os.path.exists(file_path):
+        if not exists(file_path):
             showErrorMessage("Die angegebene Datei existiert nicht")
             return
-        if not os.path.isfile(file_path):
+        if not isfile(file_path):
             showErrorMessage("Der angegebene Pfad zeigt nicht auf eine Datei.")
             return
         if name == "":

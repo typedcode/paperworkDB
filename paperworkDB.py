@@ -24,7 +24,7 @@ def update_selected_tags():
 
 def double_click(event):
     item = tree.selection()[0]
-    readBlobData(tree.item(item)['values'][6])
+    readBlobData(tree.item(item)['values'][7])
 
 def apply_filters(a = None):
     person = person_combobox.get()

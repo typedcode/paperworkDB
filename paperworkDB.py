@@ -49,7 +49,7 @@ def apply_filters(a = None):
         ):
             tree.insert("", "end", values=row)
 
-root = tk.Tk()
+root = tk.Tk(className='paperworkDB')
 root.title("paperworkDB")
 
 menubar = tk.Menu(root)
